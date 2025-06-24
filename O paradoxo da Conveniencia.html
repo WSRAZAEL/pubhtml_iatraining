@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Warm & Authoritative Neutrals -->
+    <!-- Application Structure Plan: The SPA is designed as a narrative journey for a security professional or executive. It starts with a high-level dashboard (Overview) to establish the scale of the problem. Then, it dives into an "Interactive Threat Catalog" where users can explore specific attacks on demand, preventing information overload. This is followed by a "Vulnerability & Impact" section with data visualizations to synthesize key weaknesses. The journey continues to a "Defensive Playbook," offering actionable mitigation strategies. Finally, a "Compliance & Standards" section provides reference material. This thematic, task-oriented structure was chosen over the report's linear academic format to enhance engagement, facilitate non-linear exploration, and make complex information digestible for a professional audience focused on risk assessment and mitigation. A sticky navigation bar aids discovery and movement between these logical sections. -->
+    <!-- Visualization & Content Choices: 
+        - Key Metrics (Stats): Goal: Inform. Method: Large, bold text (HTML/CSS). Justification: Immediately conveys the magnitude of the threat.
+        - Threat Catalog (Interactive Cards): Goal: Organize & Inform. Method: HTML/CSS grid with JS for interactive toggling of details. Justification: Allows users to self-direct their learning, focusing on attacks relevant to them without being overwhelmed.
+        - Attack Flow Diagram (Relay Attack): Goal: Organize. Method: Structured HTML/CSS (Flexbox) with Unicode icons. Justification: A simple, clear visual representation of a complex process, avoiding heavy graphics. No SVG/Mermaid.
+        - Attack Vector Analysis (Donut Chart): Goal: Compare. Method: Chart.js (Canvas). Justification: Visually demonstrates the critical role of social engineering vs. pure technical exploits, a key insight from the report.
+        - Mitigation Strategies (Cards with Icons): Goal: Organize & Inform. Method: HTML/CSS grid. Justification: Presents actionable advice in a scannable, easy-to-reference format.
+        - Defense Effectiveness (Bar Chart): Goal: Compare. Method: Chart.js (Canvas). Justification: Provides a clear, comparative view of the impact of different security measures, aiding in strategic decision-making. No SVG/Mermaid.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>Análise Interativa: Ataques NFC e Replay em Pagamentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #3D405B;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 450px;
+        }
+        .card-accent {
+            border-left: 4px solid #5D8AA8;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #5D8AA8;
+            border-bottom-color: #5D8AA8;
+        }
+        .expand-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="font-bold text-lg text-[#3D405B]">Painel de Ameaças NFC</div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#overview" class="nav-link pb-1 border-b-2 border-transparent">Visão Geral</a>
+                    <a href="#threats" class="nav-link pb-1 border-b-2 border-transparent">Catálogo de Ameaças</a>
+                    <a href="#defense" class="nav-link pb-1 border-b-2 border-transparent">Estratégias de Defesa</a>
+                    <a href="#standards" class="nav-link pb-1 border-b-2 border-transparent">Padrões</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center py-16 md:py-24">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#333] mb-4">O Paradoxo da Conveniência</h1>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto">Uma análise interativa dos riscos emergentes em pagamentos NFC e de Replay, baseada na pesquisa de Wesley Serrano.</p>
+        </header>
+
+        <section id="overview" class="mb-20 md:mb-28">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3D405B]">Panorama do Risco Financeiro</h2>
+                <p class="mt-3 text-slate-600 max-w-2xl mx-auto">A conveniência dos pagamentos sem contato acelerou a inovação, mas também expandiu drasticamente a superfície de ataque, resultando em um aumento significativo das fraudes.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-5xl font-bold text-[#5D8AA8]">196%</p>
+                    <p class="mt-2 text-slate-700 font-semibold">Aumento de Trojans bancários Android em 2024</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-5xl font-bold text-[#E2725B]">87%</p>
+                    <p class="mt-2 text-slate-700 font-semibold">Das instituições financeiras relataram mais roubos de credenciais</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-5xl font-bold text-[#81B29A]">134M</p>
+                    <p class="mt-2 text-slate-700 font-semibold">Transações de relay bloqueadas pela Visa em 6 meses (2024)</p>
+                </div>
+            </div>
+            
+            <div class="mt-20 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center text-[#3D405B] mb-2">A Causa Raiz das Vulnerabilidades</h3>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">Embora as explorações técnicas sejam sofisticadas, a grande maioria dos ataques bem-sucedidos depende da manipulação do usuário. A engenharia social continua sendo o vetor de entrada mais crítico.</p>
+                <div class="chart-container h-[300px] md:h-[400px]">
+                    <canvas id="vulnerabilitySourceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="threats" class="mb-20 md:mb-28">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3D405B]">Catálogo Interativo de Ameaças</h2>
+                <p class="mt-3 text-slate-600 max-w-2xl mx-auto">Explore os principais vetores de ataque. Clique em cada cartão para revelar detalhes sobre o seu funcionamento, ferramentas utilizadas e casos reais.</p>
+            </div>
+            <div class="space-y-6" id="threat-catalog">
+            </div>
+        </section>
+
+        <section id="defense" class="mb-20 md:mb-28">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3D405B]">O Manual de Defesa Estratégica</h2>
+                <p class="mt-3 text-slate-600 max-w-2xl mx-auto">Uma defesa robusta combina múltiplas camadas de tecnologia, processos e educação. Nenhuma medida isolada é suficiente.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-start gap-4 card-accent">
+                        <span class="text-3xl">🛡️</span>
+                        <div>
+                            <h4 class="font-bold text-lg text-[#3D405B]">Controles Técnicos</h4>
+                            <p class="text-slate-600 mt-1">Implemente Tokenização, MFA, CVV Dinâmico e Protocolos de Limitação de Distância para tornar os dados interceptados inúteis e validar a legitimidade das transações.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-start gap-4 card-accent">
+                        <span class="text-3xl">💻</span>
+                        <div>
+                            <h4 class="font-bold text-lg text-[#3D405B]">Segurança de Aplicação e Firmware</h4>
+                            <p class="text-slate-600 mt-1">Adote DevSecOps, realize auditorias de segurança rigorosas e utilize App Shielding para proteger contra malware e exploração de vulnerabilidades como buffer overflow.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-start gap-4 card-accent">
+                        <span class="text-3xl">👥</span>
+                        <div>
+                            <h4 class="font-bold text-lg text-[#3D405B]">A Firewall Humana</h4>
+                            <p class="text-slate-600 mt-1">Invista na educação contínua do usuário sobre engenharia social (phishing, smishing), verificação de QR Codes e higiene digital para criar uma primeira linha de defesa consciente.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-center text-[#3D405B] mb-2">Efetividade Relativa das Mitigações</h3>
+                    <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">Este gráfico ilustra o impacto comparativo das principais estratégias de defesa na redução do risco de fraude.</p>
+                    <div class="chart-container h-[450px]">
+                        <canvas id="mitigationEffectivenessChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="standards" class="mb-12">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3D405B]">Padrões e Regulamentações da Indústria</h2>
+                <p class="mt-3 text-slate-600 max-w-2xl mx-auto">A conformidade com os padrões globais é a base para uma infraestrutura de pagamentos segura e interoperável.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-xl text-[#3D405B] mb-2">EMVCo</h3>
+                    <p class="text-slate-600">Define as especificações técnicas para pagamentos com chip seguros. Foca na geração de criptogramas dinâmicos para cada transação, dificultando a clonagem e ataques de replay.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-xl text-[#3D405B] mb-2">PCI DSS 4.0</h3>
+                    <p class="text-slate-600">Padrão global para proteção de dados de cartão. Enfatiza a segurança contínua, exigindo criptografia, tokenização, controles de acesso fortes e monitoramento regular de redes.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-xl text-[#3D405B] mb-2">W3C WebNFC API</h3>
+                    <p class="text-slate-600">Estabelece diretrizes de segurança e privacidade para o uso de NFC em navegadores web, focando no consentimento explícito e na conscientização do usuário para cada operação.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 mt-20">
+        <div class="container mx-auto py-8 px-4 text-center">
+            <p>Esta análise interativa demonstra que a segurança em pagamentos é um desafio dinâmico.</p>
+            <p class="text-sm text-slate-400 mt-2">Uma defesa eficaz exige vigilância constante, inovação tecnológica e colaboração em todo o ecossistema.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const threatData = [
+            {
+                title: 'NFC Relay Attack (Ghost Tap)',
+                icon: '📡',
+                summary: 'Intercepta e retransmite sinais NFC em tempo real para executar transações fraudulentas à distância, muitas vezes sem o conhecimento da vítima.',
+                details: `
+                    <p class="mb-4">Este ataque utiliza dois dispositivos: um "Reader" próximo à vítima para capturar os dados do cartão via NFC e um "Tapper" em um POS/ATM para realizar a transação. A comunicação entre eles ocorre via internet, eliminando a barreira da distância.</p>
+                    <h5 class="font-semibold mb-2">Ferramentas e Campanhas:</h5>
+                    <ul class="list-disc list-inside text-slate-600 space-y-1">
+                        <li><strong>SuperCard X:</strong> Malware-as-a-Service (MaaS) com foco em discrição, usado em campanhas na Itália.</li>
+                        <li><strong>NFCGate / NGate:</strong> Ferramenta de código aberto adaptada para malware, usada em ataques na Rússia.</li>
+                        <li><strong>ZNFC:</strong> App Android para relay de transações "tap-to-pay" de carteiras móveis clonadas.</li>
+                    </ul>
+                `
+            },
+            {
+                title: 'Jackpotting via NFC',
+                icon: '🎰',
+                summary: 'Explora falhas de "buffer overflow" no firmware de leitores NFC para forçar ATMs a dispensar dinheiro ou alterar valores de transação.',
+                details: `
+                    <p class="mb-4">Pesquisas da IOActive demonstraram que um simples aplicativo Android pode enviar dados malformados (APDUs) para um leitor NFC, corrompendo sua memória e assumindo o controle do dispositivo. Isso pode levar ao travamento do terminal, roubo de dados ou ao "jackpotting".</p>
+                    <h5 class="font-semibold mb-2">Técnica Chave:</h5>
+                    <ul class="list-disc list-inside text-slate-600 space-y-1">
+                        <li><strong>Buffer Overflow:</strong> Envio de mais dados do que o buffer de memória do firmware pode suportar, sobrescrevendo áreas de memória adjacentes com código malicioso.</li>
+                    </ul>
+                `
+            },
+            {
+                title: 'Bypass de Protocolo EMV',
+                icon: '🔓',
+                summary: 'Manipula as etapas de verificação do padrão EMV para autorizar transações sem a devida autenticação, como o bypass de PIN offline.',
+                details: `
+                    <p class="mb-4">Atacantes interceptam a comunicação entre o cartão e o terminal (ataque Man-in-the-Middle) para enganar o sistema. Por exemplo, podem instruir o terminal que a verificação do PIN não é necessária porque ela já foi (supostamente) realizada no dispositivo do usuário (como um celular), permitindo transações de alto valor sem PIN.</p>
+                    <h5 class="font-semibold mb-2">Vulnerabilidades:</h5>
+                    <ul class="list-disc list-inside text-slate-600 space-y-1">
+                        <li><strong>Ataque Pre-Play:</strong> Captura de um código de transação (ARQC) para reutilização posterior.</li>
+                        <li><strong>Downgrade de CVM:</strong> Enganar o terminal para usar um Método de Verificação do Titular do Cartão (CVM) mais fraco.</li>
+                    </ul>
+                `
+            },
+            {
+                title: 'Trojan of Things (ToT)',
+                icon: '🏷️',
+                summary: 'Incorpora tags NFC maliciosas em objetos do cotidiano (ex: notas de dinheiro, cartazes) para executar ações indesejadas quando um celular se aproxima.',
+                details: `
+                    <p class="mb-4">O ataque explora a natureza passiva e sempre ativa do NFC em muitos smartphones. A aproximação involuntária de uma tag ToT pode forçar o navegador a abrir um site de phishing, instalar um perfil malicioso ou tentar parear com um dispositivo Bluetooth mal-intencionado, tudo isso de forma furtiva.</p>
+                    <h5 class="font-semibold mb-2">Vetores Comuns:</h5>
+                    <ul class="list-disc list-inside text-slate-600 space-y-1">
+                        <li>Notas de dinheiro, adesivos em locais públicos, roupas.</li>
+                        <li>Técnicas como "toque fantasma" podem simular a interação do usuário na tela.</li>
+                    </ul>
+                `
+            },
+            {
+                title: 'Hijacking de QR Code',
+                icon: '🔗',
+                summary: 'Substitui códigos QR legítimos por maliciosos para desviar pagamentos, roubar credenciais ou instalar malware.',
+                details: `
+                    <p class="mb-4">Aproveitando-se do fato de que códigos QR não são legíveis por humanos, os atacantes colocam adesivos sobre códigos legítimos em parquímetros, menus de restaurantes ou e-mails de phishing. Ao escanear, a vítima é redirecionada para um destino controlado pelo atacante.</p>
+                    <h5 class="font-semibold mb-2">Técnicas de Ataque:</h5>
+                    <ul class="list-disc list-inside text-slate-600 space-y-1">
+                        <li><strong>QRLJacking:</strong> Sequestro de sessões de login que usam QR Code (ex: WhatsApp Web).</li>
+                        <li><strong>Desvio de Pagamento:</strong> O QR Code malicioso aponta para a conta do fraudador em vez da conta do comerciante.</li>
+                    </ul>
+                `
+            }
+        ];
+
+        const catalog = document.getElementById('threat-catalog');
+        threatData.forEach(threat => {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-md overflow-hidden';
+            card.innerHTML = `
+                <div class="p-6 flex justify-between items-center cursor-pointer threat-header">
+                    <div class="flex items-center gap-4">
+                        <span class="text-4xl">${threat.icon}</span>
+                        <div>
+                            <h4 class="font-bold text-lg text-[#3D405B]">${threat.title}</h4>
+                            <p class="text-slate-600 text-sm">${threat.summary}</p>
+                        </div>
+                    </div>
+                    <span class="text-2xl text-slate-500 transform transition-transform expand-arrow">+</span>
+                </div>
+                <div class="expand-content">
+                    <div class="p-6 border-t border-slate-200 text-slate-700">
+                        ${threat.details}
+                    </div>
+                </div>
+            `;
+            catalog.appendChild(card);
+        });
+        
+        document.querySelectorAll('.threat-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const arrow = header.querySelector('.expand-arrow');
+                const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
+
+                document.querySelectorAll('.expand-content').forEach(c => c.style.maxHeight = '0px');
+                document.querySelectorAll('.expand-arrow').forEach(a => {
+                    a.textContent = '+';
+                    a.classList.remove('rotate-45');
+                });
+                
+                if (!isOpen) {
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    arrow.textContent = '−'; 
+                }
+            });
+        });
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const vulnerabilitySourceCtx = document.getElementById('vulnerabilitySourceChart').getContext('2d');
+        new Chart(vulnerabilitySourceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Engenharia Social (Phishing, Smishing)', 'Exploração Técnica Direta (Firmware, Protocolo)'],
+                datasets: [{
+                    data: [70, 30],
+                    backgroundColor: ['#E2725B', '#5D8AA8'],
+                    borderColor: '#F8F7F4',
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#3D405B', font: { size: 14 } }
+                    },
+                    tooltip: {
+                        callbacks: { title: tooltipTitleCallback },
+                        backgroundColor: '#3D405B',
+                        titleColor: '#FFFFFF',
+                        bodyColor: '#F8F7F4',
+                        padding: 12,
+                        cornerRadius: 4
+                    }
+                }
+            }
+        });
+
+        const mitigationEffectivenessCtx = document.getElementById('mitigationEffectivenessChart').getContext('2d');
+        new Chart(mitigationEffectivenessCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Tokenização + EMV', 'MFA (Biometria/Dispositivo)', 'Monitoramento de Anomalias (IA)', 'Educação do Usuário', 'App Shielding / RASP'],
+                datasets: [{
+                    label: 'Efetividade Relativa',
+                    data: [98, 95, 88, 75, 82],
+                    backgroundColor: ['#5D8AA8', '#81B29A', '#F0A27B', '#E2725B', '#6A9FB4'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { color: '#3D405B', callback: value => value + '%' }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#3D405B', font: { weight: '600' } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback,
+                            label: (context) => `${context.dataset.label}: ${context.parsed.x}%`
+                        },
+                        backgroundColor: '#3D405B',
+                        titleColor: '#FFFFFF',
+                        bodyColor: '#F8F7F4',
+                        padding: 12,
+                        cornerRadius: 4
+                    }
+                }
+            }
+        });
+        
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a');
+        
+        window.onscroll = () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        };
+    });
+    </script>
+</body>
+</html>

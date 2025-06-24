@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Warm & Authoritative Neutrals -->
+    <!-- Application Structure Plan: The SPA is structured as a guided exploration into NFC/Replay attacks. It begins with an "Overview" for high-level statistics and the core vulnerability source. The central "Catálogo de Ameaças" section provides a dynamic, interactive list where users can select any of the 10 attacks to view detailed information (vectors, tools, real cases, defenses, IoCs) in a dedicated display area. This prevents information overload and allows focused learning. Below the individual attack details, a comprehensive "Tabela Comparativa" summarizes all attacks for quick reference. This is followed by a "Estratégias de Defesa" section, detailing mitigation techniques and their effectiveness, and concludes with a "Padrões e Regulamentações" section for industry compliance. This modular, interactive, and progressively detailed structure was chosen to empower users to navigate complex information at their own pace, fostering deeper understanding and practical application, which is crucial for a professional audience. A sticky navigation bar ensures easy access to all main sections. -->
+    <!-- Visualization & Content Choices: 
+        - Key Metrics (Overview): Goal: Inform. Method: Large, bold text (HTML/CSS). Interaction: Static. Justification: Quick, impactful summary of the threat landscape.
+        - Vulnerability Source (Donut Chart): Goal: Compare. Method: Chart.js (Canvas). Interaction: Tooltips. Justification: Visually highlights the predominant entry point for attacks (social engineering), critical for strategic defense.
+        - Attack Catalog (Dynamic Content Display): Goal: Inform & Organize. Method: HTML buttons for navigation, dynamic content injection via JavaScript into a main display area. Interaction: Click to view details. Justification: Provides in-depth information for each of the 10 attacks without overwhelming the user with a single, massive scrollable block.
+        - Attack Details (Text Blocks): Goal: Inform. Method: Structured HTML (headings, paragraphs, lists) for vector, tools, cases, defenses, IoCs. Interaction: Displayed dynamically upon selection. Justification: Presents detailed qualitative and quantitative information from the report in an organized, readable format for each attack.
+        - Comparative Table (Table): Goal: Organize & Compare. Method: HTML table dynamically populated by JavaScript. Interaction: Static/Scrollable. Justification: Offers a concise, side-by-side summary of key attributes across all 10 attacks for quick comparison and reference.
+        - Mitigation Strategies (Feature Cards): Goal: Inform & Organize. Method: HTML/CSS (Flexbox/Grid). Interaction: Static. Justification: Presents actionable defense pillars clearly.
+        - Mitigation Effectiveness (Bar Chart): Goal: Compare. Method: Chart.js (Canvas). Interaction: Tooltips. Justification: Quantifies the relative impact of different defense strategies, aiding in prioritization.
+        - Standards (Feature Cards): Goal: Inform. Method: HTML/CSS. Interaction: Static. Justification: Provides essential reference points for industry compliance and best practices.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>Análise Interativa: Ataques NFC e Replay em Pagamentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F7F4;
+            color: #3D405B;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 450px;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #5D8AA8;
+            border-bottom-color: #5D8AA8;
+        }
+        .attack-button {
+            transition: background-color 0.2s, color 0.2s, font-weight 0.2s;
+        }
+        .attack-button.active {
+            background-color: #5D8AA8;
+            color: white;
+            font-weight: 700;
+        }
+        .attack-button:hover:not(.active) {
+            background-color: #F0F0F0;
+            color: #3D405B;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="font-bold text-lg text-[#3D405B]">Painel de Ameaças NFC</div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#overview" class="nav-link pb-1 border-b-2 border-transparent">Visão Geral</a>
+                    <a href="#threats" class="nav-link pb-1 border-b-2 border-transparent">Catálogo de Ameaças</a>
+                    <a href="#defense" class="nav-link pb-1 border-b-2 border-transparent">Estratégias de Defesa</a>
+                    <a href="#standards" class="nav-link pb-1 border-b-2 border-transparent">Padrões</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center py-16 md:py-24">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#333] mb-4">O Paradoxo da Conveniência</h1>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto">Uma análise interativa dos riscos emergentes em pagamentos NFC e de Replay, baseada na pesquisa aprofundada.</p>
+        </header>
+
+        <section id="overview" class="mb-20 md:mb-28">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3D405B]">Panorama do Risco Financeiro</h2>
+                <p class="mt-3 text-slate-600 max-w-2xl mx-auto">A conveniência dos pagamentos sem contato acelerou a inovação, mas também expandiu drasticamente a superfície de ataque, resultando em um aumento significativo das fraudes.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-5xl font-bold text-[#5D8AA8]">196%</p>
+                    <p class="mt-2 text-slate-700 font-semibold">Aumento de Trojans bancários Android em 2024</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-5xl font-bold text-[#E2725B]">87%</p>
+                    <p class="mt-2 text-slate-700 font-semibold">Das instituições financeiras relataram mais roubos de credenciais</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <p class="text-5xl font-bold text-[#81B29A]">134M</p>
+                    <p class="mt-2 text-slate-700 font-semibold">Transações de relay bloqueadas pela Visa em 6 meses (2024)</p>
+                </div>
+            </div>
+            
+            <div class="mt-20 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center text-[#3D405B] mb-2">A Causa Raiz das Vulnerabilidades</h3>
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">Embora as explorações técnicas sejam sofisticadas, a grande maioria dos ataques bem-sucedidos depende da manipulação do usuário. A engenharia social continua sendo o vetor de entrada mais crítico.</p>
+                <div class="chart-container h-[300px] md:h-[400px]">
+                    <canvas id="vulnerabilitySourceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="threats" class="mb-20 md:mb-28">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3D405B]">Catálogo Interativo de Ameaças</h2>
+                <p class="mt-3 text-slate-600 max-w-2xl mx-auto">Explore os principais vetores de ataque. Clique no nome do ataque para revelar detalhes sobre o seu funcionamento, ferramentas utilizadas, casos reais, defesas e indicadores de comprometimento.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="md:col-span-1 bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="font-bold text-xl text-[#3D405B] mb-4">Ataques</h3>
+                    <div class="flex flex-col space-y-2" id="attack-nav">
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700 active" data-attack="NFC Relay Attack">NFC Relay Attack</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Ghost Tap">Ghost Tap (Relay Escalonado)</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Replay Attack EMV/APDU">Replay Attack EMV/APDU</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Jackpotting NFC/ATM">Jackpotting NFC/ATM</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Digital Skimming por NFC">Digital Skimming por NFC</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Cópias via Apple/Google Pay">Cópias via Apple/Google Pay</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Trojan of Things">Trojan of Things</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Scan-and-Pay malware">Scan-and-Pay malware</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Offline PIN Bypass EMV">Offline PIN Bypass EMV</button>
+                        <button class="attack-button p-2 rounded-md text-left bg-white text-slate-700" data-attack="Stolen NFC Keys">Stolen NFC Keys</button>
+                    </div>
+                </div>
+                <div class="md:col-span-3 bg-white p-6 rounded-lg shadow-md" id="attack-detail-content">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+
+            <div class="mt-20 bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold text-center text-[#3D405B] mb-8">Tabela Comparativa dos Ataques</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-slate-700 border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 border-b border-gray-200">
+                                <th class="p-3 text-sm font-semibold">Ataque</th>
+                                <th class="p-3 text-sm font-semibold">Vetor</th>
+                                <th class="p-3 text-sm font-semibold">Ferramentas</th>
+                                <th class="p-3 text-sm font-semibold">Casos Reais</th>
+                                <th class="p-3 text-sm font-semibold">Fonte</th>
+                                <th class="p-3 text-sm font-semibold">Defesa Primária</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparative-table-body">
+                            <!-- Table rows will be generated here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="defense" class="mb-20 md:mb-28">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3D405B]">O Manual de Defesa Estratégica</h2>
+                <p class="mt-3 text-slate-600 max-w-2xl mx-auto">Uma defesa robusta combina múltiplas camadas de tecnologia, processos e educação. Nenhuma medida isolada é suficiente.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-start gap-4">
+                        <span class="text-3xl text-[#5D8AA8]">🛡️</span>
+                        <div>
+                            <h4 class="font-bold text-lg text-[#3D405B]">Controles Técnicos Avançados</h4>
+                            <p class="text-slate-600 mt-1">Implemente Tokenização, Autenticação Multi-Fator (MFA), CVV Dinâmico e Protocolos de Limitação de Distância para tornar os dados interceptados inúteis e validar a legitimidade das transações.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-start gap-4">
+                        <span class="text-3xl text-[#81B29A]">💻</span>
+                        <div>
+                            <h4 class="font-bold text-lg text-[#3D405B]">Segurança de Aplicação e Firmware</h4>
+                            <p class="text-slate-600 mt-1">Adote DevSecOps, realize auditorias de segurança rigorosas e utilize App Shielding/RASP para proteger contra malware e exploração de vulnerabilidades como buffer overflow e falhas APDU.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md flex items-start gap-4">
+                        <span class="text-3xl text-[#E2725B]">👥</span>
+                        <div>
+                            <h4 class="font-bold text-lg text-[#3D405B]">A Firewall Humana</h4>
+                            <p class="text-slate-600 mt-1">Invista na educação contínua do usuário sobre engenharia social (phishing, smishing), verificação de QR Codes e higiene digital para criar uma primeira linha de defesa consciente e resiliente.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-center text-[#3D405B] mb-2">Efetividade Relativa das Mitigações</h3>
+                    <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">Este gráfico ilustra o impacto comparativo das principais estratégias de defesa na redução do risco de fraude.</p>
+                    <div class="chart-container h-[450px]">
+                        <canvas id="mitigationEffectivenessChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="standards" class="mb-12">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-[#3D405B]">Padrões e Regulamentações da Indústria</h2>
+                <p class="mt-3 text-slate-600 max-w-2xl mx-auto">A conformidade com os padrões globais é a base para uma infraestrutura de pagamentos segura e interoperável.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-xl text-[#3D405B] mb-2">EMVCo</h3>
+                    <p class="text-slate-600">Define as especificações técnicas para pagamentos com chip seguros. Foca na geração de criptogramas dinâmicos para cada transação, dificultando a clonagem e ataques de replay.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-xl text-[#3D405B] mb-2">PCI DSS 4.0</h3>
+                    <p class="text-slate-600">Padrão global para proteção de dados de cartão. Enfatiza a segurança contínua, exigindo criptografia, tokenização, controles de acesso fortes e monitoramento regular de redes.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="font-bold text-xl text-[#3D405B] mb-2">W3C WebNFC API</h3>
+                    <p class="text-slate-600">Estabelece diretrizes de segurança e privacidade para o uso de NFC em navegadores web, focando no consentimento explícito e na conscientização do usuário para cada operação.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 mt-20">
+        <div class="container mx-auto py-8 px-4 text-center">
+            <p>Esta análise interativa demonstra que a segurança em pagamentos é um desafio dinâmico e uma responsabilidade compartilhada.</p>
+            <p class="text-sm text-slate-400 mt-2">Uma defesa eficaz exige vigilância constante, inovação tecnológica e colaboração em todo o ecossistema financeiro.</p>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const attackData = {
+            'NFC Relay Attack': {
+                icon: '📡',
+                summary: 'Intercepta e retransmite sinais NFC em tempo real para executar transações fraudulentas à distância, muitas vezes sem o conhecimento da vítima.',
+                vetor: 'Um dispositivo próximo à vítima “leech” lê o sinal NFC do cartão, enquanto outro “ghost” próximo ao leitor/POS reproduz esse sinal, efetivando a compra à distância. Essa retransmissão elimina limites de distância do NFC original (normalmente ~4cm).',
+                ferramentas: 'Golpistas utilizam apps e hardware especializados, como o aplicativo de código aberto NFCGate (desenvolvido originalmente para pesquisa acadêmica) modificado para fins ilícitos. Dispositivos Android com NFC ou equipamentos como Proxmark3 podem ser empregados para captar/emular sinais NFC. Malware baseados nesse conceito, como NGate/NFSkate, usam componentes do NFCGate.',
+                casos: 'Antes restrito a laboratórios, esse ataque ganhou evidência com prisões nos EUA em 2025: 11 indivíduos foram presos no Tennessee após usarem Androids modificados para enviar transações NFC de Apple Pay a partir da China para mules nos EUA, comprando milhares de dólares em gift cards. Outro caso ocorreu na Califórnia (2025), onde suspeitos tentaram ~90 transações com carteiras móveis recheadas de cartões roubados, conseguindo efetivar compras em 20 delas.',
+                defesas: 'Padrões EMV já incluem desafios aleatórios e limites de tempo para dificultar relays, mas recomenda-se reforçar detecção temporal/geográfica – por exemplo, recusar transações se o cartão do cliente é usado quase simultaneamente em locais distantes. Terminais podem implementar cálculo de atraso de propagação (round-trip time) para identificar latência anômala de comunicação. O PCI-DSS sugere monitorar transações fora do perfil usual (múltiplas compras pequenas em sequência e locais distintos). Também é importante educar usuários a manter cartões NFC em invólucros com bloqueio RFID (RF-shielding) quando não utilizados, impedindo leitura não autorizada.',
+                iocs: 'Esse ataque é mais difícil de rastrear via IoCs tradicionais, pois não envolve malware na ponta do cartão. No entanto, a presença de aplicativos como NFCGate (ou variantes) instalados em dispositivos de atendentes/mules pode ser um indicativo. Logs de sistema anti-fraude mostrando uso do mesmo cartão em países diferentes em curto intervalo também funcionam como red flag operacional.',
+                table: { vetor: 'Dispositivo "leech" lê NFC, "ghost" reproduz no POS.', ferramentas: 'NFCGate (modificado), Proxmark3, NGate/NFSkate', casos: 'EUA (2025): Androids modificados Apple Pay.', fonte: 'Krebs (2025)', defesa: 'Detecção tempo/geolocalização; RF-shielding.' }
+            },
+            'Ghost Tap': {
+                icon: '👻',
+                summary: 'Esquema avançado de relay escalonado, vinculando cartões roubados a carteiras digitais e usando mules para compras presenciais.',
+                vetor: 'Após obter credenciais do cartão e o OTP via phishing/malware, fraudador adiciona o cartão à própria carteira móvel. Com dois smartphones rodando NFCGate conectados a um servidor, ele relaya as transações NFC de sua carteira para o dispositivo da mula em qualquer lugar do mundo. A mula apenas aproxima seu telefone do terminal POS, enquanto o aparelho do fraudador (com o cartão virtual) pode estar em outro país – o servidor encaminha os dados em tempo real.',
+                ferramentas: 'Além de apps de relay (NFCGate), surgiram kits dedicados. Por exemplo, criminosos chineses comercializam o app Z-NFC (cerca de US$500/mês), capaz de retransmitir pagamentos NFC globalmente. Fóruns clandestinos exibem ofertas de “envio de Apple/Google Pay do meu telefone para o seu para operações NFC”. Malware móvel como NGate (descoberto pela ESET) e táticas refinadas como Ghost Tap foram observados pela ThreatFabric em 2024.',
+                casos: 'Em 2024, análises indicaram aumento dessas fraudes na Europa e EUA. A empresa ThreatFabric reportou uma onda de Ghost Tap com mules recrutados online e múltiplas compras em lojas físicas espalhadas, dificultando vincular ao mandante. Autoridades dos EUA confirmaram os primeiros casos com carteiras móveis clonadas: em Knoxville (março/2025) houve prisões de grupos usando Androids para realizar Apple Pay com cartões roubados, adquirindo dezenas de milhares de dólares em gift cards.',
+                defesas: 'Instituições devem fortalecer verificação de inclusão de cartões em wallets – ex.: notificar o cliente e requerer confirmação fora do canal móvel (call center) ao detectar um cartão sendo adicionado a Apple/Google Pay. Mecanismos antifraude devem analisar padrões de uso: Ghost Tap tende a compras presenciais pequenas e simultâneas em regiões diversas, evitando saques em ATM. Políticas de localização (geofencing) e limites mais baixos por carteira digital clonada podem reduzir impacto. A EMVCo e redes de cartões recomendam implementar detecção de relay via timestamps e até autenticação multi-fator out-of-band para compras suspeitas.',
+                iocs: 'Como é uma técnica, IoCs tradicionais são indiretos. No entanto, sinais incluem múltiplos OTPs bancários solicitados sem ação do cliente (indicando tentativa de adicionar cartão a wallet), ou presença de apps de relay (ex.: NFCGate) instalados em aparelhos de suspeitos. Bancos podem monitorar se um mesmo dispositivo realiza pagamentos com tokens de muitos cartões diferentes – comportamento típico de mules usando Ghost Tap.',
+                table: { vetor: 'Relay multi-hop com cartão em wallet móvel + retransmissão via internet.', ferramentas: 'NFCGate + servidor; app Z-NFC (MaaS chinês).', casos: 'Fraude internacional 2024: mules na Europa usando Apple Pay remoto.', fonte: 'ThreatFabric (2024)', defesa: 'Verificação robusta ao adicionar cartões em wallets; antifraude.' }
+            },
+            'Replay Attack EMV/APDU': {
+                icon: '⏪',
+                summary: 'Reutilização de dados de uma transação legítima (comandos APDU) para aprovar uma nova transação.',
+                vetor: 'O atacante precisa capturar o tráfego NFC entre o cartão e o terminal – por exemplo, via um dispositivo interceptador ou malware no POS – e armazenar as informações da transação (incluindo o criptograma gerado pelo chip). Depois, ele “reapresenta” esses dados a um terminal diferente, fingindo ser o cartão original, na tentativa de que o terminal/emitente aceitem o pagamento duplicado.',
+                ferramentas: 'Equipamentos de emulação de cartão (como Proxmark3 ou shielded smartphones) podem reproduzir APDUs previamente gravadas. Em conferências, pesquisadores demonstraram hardware de USD $35 capaz de emular um cartão e executar replay de um pagamento gravado. Contudo, a janela de sucesso é curta – é necessário que o mesmo criptograma seja válido antes de expirar ou antes que o contador de transações do chip mude.',
+                casos: 'Ataques de replay puros são raros no mundo real devido às contramedidas do protocolo. Entretanto, vulnerabilidades relacionadas já ocorreram. O chamado pre-play attack (Cambridge, 2014) mostrou que RNGs fracos em ATMs permitiam pré-calcular respostas de chip, viabilizando clonagem indetectável similar a replay. Em 2018, pesquisadores demonstraram replays contra carteiras digitais NFC, explorando falhas de implementação em modos offline (por ex., cartões transporte com EMV que não atualizavam contadores).',
+                defesas: 'O padrão EMVCo exige uso de números imprevisíveis e criptogramas únicos (ARQC/ARPC) exatamente para evitar replays – transações repetidas são rejeitadas pelo emissor ao ver um criptograma duplicado ou um ATC (contador) fora de sequência. Instituições devem assegurar que terminais forcem transações online ou utilizem CAM (Card Authentication Method) dinâmica. Atualizações de firmware devem corrigir qualquer fonte de entropia fraca. O PCI DSS recomenda revisão periódica de logs de transações offline aprovadas e reconciliá-los com sequências de ATC para detectar possíveis reutilizações.',
+                iocs: 'Não há IoCs triviais, já que um replay bem-sucedido emula uma transação legítima. Porém, discrepâncias nos registros do cartão (ex.: duas transações com o mesmo ATC ou criptograma igual) são indicadores claros de fraude por repetição. Auditorias que encontrem mesmo UN (Unpredictable Number) utilizado em transações distintas ou vários pagamentos offline seguidos sem incremento de ATC no chip devem acender alerta de replay.',
+                table: { vetor: 'Reutilização de dados de transação legítima (APDU).', ferramentas: 'Emuladores de cartão (Proxmark, etc).', casos: 'Academicamente demonstrado (Troopers 2018).', fonte: 'Troopers18 (2018)', defesa: 'Criptograma único e ATC por transação.' }
+            },
+            'Jackpotting NFC/ATM': {
+                icon: '🎰',
+                summary: 'Explora vulnerabilidades nos leitores NFC de ATMs para forçar a dispensa de dinheiro (jackpotting) com um smartphone.',
+                vetor: 'O atacante aproxima um smartphone do leitor contactless do ATM, fazendo-o se passar por um cartão. Porém, em vez de uma transação normal, o telefone envia um APDU malicioso especialmente preparado que explora bugs no firmware do leitor NFC. Isso permite executar código não autorizado no sistema do ATM ou travar proteções. Com privilégio obtido, o criminoso então aciona comandos de dispensação de cédulas – efetivamente saque sem autenticação.',
+                ferramentas: 'É necessário um aplicativo personalizado no smartphone do atacante. No caso demonstrado, foi usado um app Android desenvolvido pelo pesquisador da IOActive, capaz de imitar comunicações de cartão e enviar payloads que exploravam estouro de buffer nos leitores (comuns em modelos de fabricantes como ID Tech e others). Além do telefone, nenhuma ferramenta invasiva (como borrachas ou pendrives internos) foi necessária – a aproximação NFC bastou.',
+                casos: 'Até o momento, esses ataques têm sido divulgados em contexto controlado de pesquisa. Em junho de 2021, Josep Rodriguez (IOActive) apresentou à Wired como conseguiu fazer um ATM em Madrid liberar dinheiro apenas com um telefone em cima do leitor sem contato. Ele também mostrou a capacidade de crashar terminais POS e capturar dados de cartões via NFC explorando a mesma falha de validação de tamanho de pacote APDU. Não há relatos públicos confirmados de criminosos usando essa técnica em ambiente real, mas em 2022 surgiram alertas da Diebold Nixdorf e NCR para atualizar firmware de leitores após pesquisas similares (pois a correção exige patch físico em milhares de ATMs, um processo lento).',
+                defesas: 'Fabricantes de ATMs e leitores NFC lançaram patches de firmware para as falhas identificadas, devendo ser aplicados o mais rápido possível. Medidas de segurança em profundidade: exigir autenticação mútua robusta entre o módulo leitor e o ATM, validação estrita do tamanho/formato de comandos APDU recebidos, e monitoramento de comportamento anômalo (ex.: leitor reiniciando ou travando frequentemente pode indicar tentativas de exploração). O PCI ATM Security e o EMVCo vêm trabalhando em requisitos para que transações via NFC ATM tenham limites e validações adicionais, por exemplo não permitir comandos de manutenção via interface de cliente. Fisicamente, restringir o tempo de resposta do leitor e isolar eletronicamente o módulo NFC pode conter explorações.',
+                iocs: 'IoCs podem incluir mensagens de erro inesperadas no visor do ATM ou reinicialização do módulo contactless após uma interação (como relatado no teste, em que o ATM exibiu erro e travou o leitor após o ataque). Em logs internos, presença de códigos de erro de dispositivo ou tentativa de acesso a áreas não autorizadas da memória do ATM seriam indicadores. Contudo, tais logs nem sempre são acessíveis externamente; em prática, a detecção pode depender de auditorias forenses pós-incidente.',
+                table: { vetor: 'Exploit em leitor NFC de ATM para forçar saque.', ferramentas: 'App Android customizado, falhas firmware.', casos: 'Pesquisa IOActive (2021): ATM em Madrid liberou dinheiro.', fonte: 'Wired (2021)', defesa: 'Atualização firmware; validação comandos NFC.' }
+            },
+            'Digital Skimming por NFC': {
+                icon: '👀',
+                summary: 'Interceptação passiva de comunicações sem contato para obter dados do cartão, similar a um "pickpocket" eletrônico.',
+                vetor: 'O atacante, munido de um leitor oculto ou app malicioso, se aproxima a poucos centímetros do cartão ou smartphone da vítima (no bolso, bolsa, etc.) e inicia uma transação ou leitura sem que a vítima perceba. Alternativamente, ele posiciona um dispositivo de escuta próximo ao ponto de venda para captar as trocas de RF quando a vítima paga. Em ambos os casos, obtém-se informações NFC como o PAN (número do cartão), data de validade e alguns códigos de autenticação.',
+                ferramentas: 'Pequenos leitores RFID/NFC portáteis, facilmente camufláveis (ex.: escondidos em capinhas de celular ou carteiras falsas) permitem a leitura clandestina de cartões a ~3-5 cm. Antenas mais potentes conectadas a receptores SDR podem estender esse alcance para dezenas de cm, possibilitando eavesdropping sem contato próximo direto. Softwares como android-nfc-paycardreader e dispositivos como Proxmark3 têm sido usados em demonstrações de “pickpocket” eletrônico.',
+                casos: 'Autoridades e empresas contestam a prevalência: há poucos registros oficiais de perdas por “electronic pickpocketing” até hoje. No entanto, provas de conceito abundam. Em 2012, a revista Which? do Reino Unido demonstrou extrair de cartões contactless nome, número e expiracão com um app de Android tocando na carteira de voluntários, conseguindo até usar esses dados em compras online. Em 2021, Karsten Nohl avaliou os achados de Rodriguez e notou que o roubo via NFC tende a expor apenas dados de faixa magnética (PAN, expiração) sem PIN ou CVV dinâmico, limitando o uso direto. Ainda assim, em mercados onde verificações online são frouxas, esses dados poderiam ser usados fraudulentamente.',
+                defesas: 'A tecnologia EMV previne a clonagem completa porque a cada transação é gerado um criptograma único, e o CVV de contato (iCVV) difere do CVV impresso do cartão – portanto, mesmo que um skimmer leia o PAN e validade, não obtém o código necessário para compras online na maioria dos sites seguros. Para mitigar, emissores devem limitar transações sem CVV ou 3-D Secure. Usuários podem se precaver guardando cartões em carteiras com bloqueio RFID e desabilitando NFC de smartphones quando não em uso. Padrões PCI proíbem armazenamento de dados confidenciais não criptografados; um terminal comprometido agindo como skimmer violaria essas normas – auditorias PCI-DSS em estabelecimentos ajudam a flagrar dispositivos adulterados. O W3C NFC (especificação Web NFC) também exige que navegadores peçam consentimento do usuário ao ler tags, evitando ativações silenciosas de NFC que poderiam ser maliciosas.',
+                iocs: 'Para usuários, um possível indicador é surgimento de pequenas transações desconhecidas (fraudadores podem testar valores baixos sem PIN). Em ambientes comerciais, detectar um dispositivo NFC não autorizado emitindo sinal (via varredura de frequências) pode revelar um skimmer ativo. A polícia já orienta o público a observar se há etiquetas estranhas ou sobreposições em máquinas de pagamento onde se encosta o cartão – pois criminosos podem colar leitores adicionais ali (analogia aos skimmers de tarja magnética).',
+                table: { vetor: 'Leitura não autorizada ou interceptação de dados NFC.', ferramentas: 'Leitores portáteis ocultos, antenas amplificadas.', casos: 'Testes no UK (2012) leram PAN/nome com app Android.', fonte: 'Which?/CSO (2012)', defesa: 'Criptografia EMV (iCVV dinâmico); capas bloqueadoras.' }
+            },
+            'Cópias via Apple/Google Pay': {
+                icon: '📲',
+                summary: 'Clonagem digital de cartões roubados em carteiras móveis do atacante, permitindo pagamentos por aproximação sem o cartão físico.',
+                vetor: 'O ataque começa geralmente com phishing: páginas falsas de entrega, pedágio ou serviços enganam a vítima a inserir dados do cartão, e em seguida o site solicita o OTP enviado pelo banco para “verificação”. Em segundos, os criminosos usam esses dados para linkar o cartão a uma wallet em um smartphone controlado por eles. Muitas instituições não exigem passos adicionais além do OTP, facilitando o processo. Uma vez adicionado, o cartão virtual pode ser usado para pagar em terminais NFC ou lojas online, até que a vítima perceba.',
+                ferramentas: 'Não é necessário malware sofisticado – os próprios apps legítimos (Apple Pay/Google Wallet) são aproveitados de forma indevida. Os criminosos costumam utilizar múltiplos smartphones descartáveis: kits à venda incluem aparelhos Android cada um carregando 5-10 cartões furtados nas wallets. Em fóruns e grupos de mensagem (Telegram), encontram-se ofertas de venda de smartphones prontos, com várias wallets de bancos diferentes instaladas e cartões já adicionados. Além disso, para pagar sem arriscar o aparelho “mestre”, muitos combinam com táticas de relay (vide Ghost Tap) para que mules realizem as compras, mantendo o telefone com os cartões longe do local do crime.',
+                casos: 'Organizações criminosas baseadas na China profissionalizaram esse golpe em 2022-2025. KrebsOnSecurity revelou cartéis que enviam em massa phishing via iMessage/RCS (driblando SMS) para cartões nos EUA, vinculando centenas de cartões por semana a wallets fraudulentas. Em março/2025, duas prisões na Califórnia mostraram criminosos com celulares contendo mais de 80 cartões roubados em Apple Pay/Google Pay, usados para comprar gift cards em lojas Target. No Leste Europeu, a Kaspersky reportou em 2023 quadrilhas aplicando o mesmo método para saquear contas via carteiras digitais, com expansão global do esquema.',
+                defesas: 'Bancos devem adotar proteções de tokenização fortes – por exemplo, limitar o número de dispositivos aos quais um cartão pode ser adicionado, e alertar imediatamente o cliente (push/email) a cada novo provisionamento. Segundo o PCI e a própria Apple/Google, é recomendável usar algoritmos de risco para aprovar ou não a adição de um cartão a uma wallet (considerando dispositivo, localização, histórico do cliente). Para o usuário, a orientação é nunca fornecer códigos de verificação via links não solicitados. Ativar notificações de transações e revisar frequentemente extratos ajuda a identificar adições não autorizadas. Algumas instituições agora enviam uma notificação “Seu cartão ***1234 foi adicionado ao Apple Pay no dispositivo X” – o cliente deve agir rápido caso não tenha sido ele.',
+                iocs: 'Para o banco, um grande indicador é recebimento de OTPs sequenciais para vários cartões ou várias tentativas de OTP falhas, sugerindo um ataque automatizado de inclusão de cartão (Mule tentando múltiplos números roubados). Clientes devem desconfiar se recebem SMS de OTP sem estar fazendo operação – isso pode indicar que seus dados foram phishados e estão sendo usados por terceiros. No dispositivo do criminoso, a presença de muitas tarjetas digitais de diversos clientes diferentes é prova evidente (obtida pós-apreensão). Logs de sistemas de tokenização mostrando muitos cartões diferentes tokenizados por um mesmo dispositivo ID também caracterizam clonagem de wallet em massa.',
+                table: { vetor: 'Adição de cartões roubados em carteiras móveis do atacante via phishing/OTP.', ferramentas: 'Phishing kits; smartphones com wallets carregadas.', casos: 'EUA (2025): quadrilha chinesa com celulares e 80+ cartões em Apple Pay.', fonte: 'Krebs (2025)', defesa: 'Confirmar vinculação de cartão com passos extras; alertas em tempo real.' }
+            },
+            'Trojan of Things': {
+                icon: '🏷️',
+                summary: 'Uso de etiquetas NFC maliciosas embutidas em objetos para induzir ações inseguras em smartphones próximos, como abrir URLs de phishing.',
+                vetor: 'Os criminosos preparam etiquetas NFC contendo payloads maliciosos – como URLs de phishing, comandos para baixar um aplicativo ou configurações de sistema. Eles depois disfarçam essas tags em locais onde vítimas provavelmente encostarão seus telefones. Quando o usuário aproxima o celular (muitas vezes sem perceber, se o NFC estiver ligado por padrão), a tag pode automaticamente acionar uma função no aparelho. Ex: abrir uma página web falsa (pedindo login bancário) ou até explorar vulnerabilidades do sistema NFC. Em 2019, descobriu-se uma falha em Android que permitia iniciar download de APK via NFC sem aviso imediato – algo que uma etiqueta maliciosa poderia explorar.',
+                ferramentas: 'Ferramentas de programação de tags NFC são baratas e acessíveis (qualquer smartphone com NFC pode gravar NDEF messages em etiquetas). Atacantes usam etiquetas ocultáveis (ex.: adesivos finos) e as programam para ações encadeadas: URL de malware, comandos AT, ou exploits conhecidos. A pesquisa Trojan of Things (2017) demonstrou um protótipo onde uma etiqueta incorporada em um porta-copos infectava dispositivos Android ao contato, usando falhas então desconhecidas. Kits clandestinos poderiam incluir lotes de etiquetas pré-programadas para espalhar em ambientes públicos.',
+                casos: 'Não há muitos incidentes públicos documentados desse ataque, mas especialistas alertam para potencial crescente com popularização do NFC. Em 2021, um experimento no DEF CON colocou tags NFC com links em áreas de conferência e quase 50% dos participantes curiosos encostaram o telefone, demonstrando a eficácia do engodo (felizmente, era uma pesquisa ética). Já criminosos foram reportados na Europa colando tags por cima de etiquetas de estacionamento e parquímetros; ao tentar pagar com app oficial, o usuário lia a tag maliciosa que o levava a um site clonado do serviço municipal, roubando credenciais de pagamento.',
+                defesas: 'Educação do usuário é chave – assim como não se deve clicar em links desconhecidos, deve-se ter cuidado ao encostar o telefone em tags desconhecidas. Desative o NFC em locais/horários que não for usar. Fabricantes de OS implementam contramedidas: Android e iOS normalmente não executam automaticamente ações críticas via NFC sem confirmação do usuário (e.g., abrir URL ou instalar perfil requer interação). O padrão NFC Forum Signature RTD permite assinar digitalmente o conteúdo de tags NFC; aplicativos podem verificar essa assinatura e origem antes de executar instruções, mitigando ToT (desde que o aparelho/governo use). Empresas devem varrer fisicamente seus ATMs/POS em busca de adesivos estranhos ou dispositivos acoplados (assim como fazem com skimmers), pois um tag NFC adicionada indevidamente pode instruir clientes a sites/apps falsos.',
+                iocs: 'Possíveis IoCs incluem comportamento anômalo em smartphones após contato físico com objetos: por exemplo, o navegador abrindo sozinho em uma URL incomum ou surgimento de prompt de instalação de app desconhecido imediatamente após encostar o telefone em algum lugar. Para admins de segurança, se múltiplos usuários relatam infecção após visitar a mesma localização física (agência bancária, loja), deve-se inspecionar o local – pode haver um ToT plantado. Logs de sistema Android podem mostrar origem NFC (intent android.nfc disparada) associada ao momento da instalação de um malware, evidenciando o uso desse vetor.',
+                table: { vetor: 'Etiquetas NFC maliciosas embutidas em objetos para induzir ações inseguras.', ferramentas: 'Etiquetas NFC programadas (URLs, exploits).', casos: 'Suíça (2022): tags em anúncios levaram a site bancário falso.', fonte: 'ArXiv (2017)', defesa: 'Confirmação do usuário para NFC; assinatura digital de NDEF.' }
+            },
+            'Scan-and-Pay malware': {
+                icon: '🔗',
+                summary: 'Fraudes via QR Code: substituição de QR legítimo para desvio de pagamento ou QR malicioso que instala malware.',
+                vetor: 'Numa fraude típica, o criminoso substitui um QR code de pagamento exposto em um estabelecimento por outro código gerado por ele. A vítima escaneia achando que vai pagar o comerciante, mas o código direciona o pagamento (Pix, por ex.) para a conta do golpista. Em outro cenário, um QR code é usado para distribuir malware: por exemplo, envio de cartas falsas pedindo para “atualizar um aplicativo” com um QR que leva a um APK de trojan bancário – o usuário escaneia com o celular e acaba instalando um vírus como o Coper/Octo (Android Trojan relatado na Europa).',
+                ferramentas: 'A “ferramenta” aqui é o próprio código QR impresso ou exibido. Criminosos usam geradores de QR (há inúmeros gratuitos) para codificar links ou chaves Pix maliciosas. Adesivos transparentes com o QR falso podem ser feitos sob medida para se encaixar sobre o original. No caso de malware, kits de phishing já incluem cartas ou panfletos impressos com QR, explorando a confiança que itens físicos passam – conforme alertado pelo Centro de Cibersegurança Suíço em 2024.',
+                casos: 'No Brasil, houve diversos casos em 2023-2024. Clientes de um restaurante em São Paulo pagaram a conta escaneando um QR na mesa – descobriram depois que o dinheiro fora para criminosos, que colaram um código por cima do original. Também passageiros em Curitiba tiveram prejuízo ao tentar recarregar cartões transporte via QR em totens adulterados. Na Europa (2024), a Suíça viu uma campanha de cartas falsas do serviço meteorológico: o QR prometia um app de alerta de tempestades, mas instalava um trojan bancário Android (Coper) ao ser escaneado. Alvos incluíam centenas de usuários em vários países, indicando ação coordenada.',
+                defesas: 'Para usuários, a regra é tratar QR codes como links desconhecidos – verificar visualmente se o QR não está colado sobre outro, conferir se ao escanear aparece URL confiável (domínio correto) antes de prosseguir. Bancos e fintechs devem orientar clientes a preferir ler QR através dos próprios apps oficiais (que costumam validar o destino, exibindo o recebedor antes de confirmar pagamento). Estabelecimentos precisam auditar periodicamente os QRs expostos ao público. No caso de malware via QR, soluções de segurança móvel que inspecionam URLs podem bloquear o download malicioso após o scan. O padrão EMV QR Code define assinaturas digitais para QRs estáticos – se adotado, permitiria ao app pagador verificar autenticidade do código antes de pagar. Autoridades têm divulgado alertas (ex: FTC nos EUA, Febraban no Brasil) para aumentar a conscientização sobre QR scams.',
+                iocs: 'Em fraudes Pix/QR, um sinal clássico é divergência entre o beneficiário esperado e o exibido: se ao escanear aparece um nome estranho como recebedor, cancele imediatamente. No contexto de malware, anomalias incluem aplicativos desconhecidos instalados após ler um QR ou pedidos de permissão suspeitos logo após o scan. Empresas cujas clientes são atingidos podem coletar os URLs codificados nos QRs maliciosos – frequentemente levam a domínios recém-criados, não relacionados à instituição legítima (IoC útil: URL ou domínio a bloquear).',
+                table: { vetor: 'Substituição de QR para desvio de pagamento ou instalação de malware.', ferramentas: 'Geradores de QR falsos; cartas com QR de trojan.', casos: 'Brasil (2024): QR de restaurante adulterado; Suíça (2024): campanha postal com QR de trojan.', fonte: 'Serasa (2025) / Malwarebytes (2024)', defesa: 'Verificar destinatário; usar apps oficiais; auditar QRs físicos.' }
+            },
+            'Offline PIN Bypass EMV': {
+                icon: '🔓',
+                summary: 'Burlar a verificação de PIN offline em transações EMV, enganando o terminal para aceitar qualquer PIN como correto.',
+                vetor: 'O ataque clássico envolve colocar um dispositivo (ou chip modificado) entre o cartão e o terminal POS. Quando o terminal solicita o PIN e envia para o cartão validar, o dispositivo intercepta e responde ao terminal “PIN ok”, independentemente do PIN verdadeiro estar errado. Em transações offline, o terminal confia nessa resposta local e aprova a compra. Alternativamente, no ataque man-in-the-middle, o ladrão utiliza um cartão adulterado com firmware customizado que ignora a verificação do PIN e sempre responde sucesso.',
+                ferramentas: 'No caso francês de 2011, os golpistas criaram cartões híbridos soldando um chip adicional (FUNcard programável) junto ao chip original roubado. Esse segundo chip rodava um pequeno código que interceptava o comando de verificação de PIN e devolvia resposta de sucesso ao terminal. Hoje, poderia ser feito via microcontroladores do tamanho de um SIM card embutidos no cartão clonado. Kits conhecidos de pesquisadores (e.g., o do Cambridge University) usavam um POS modificado e um módulo FPGA – inicialmente aparatos volumosos, mas rapidamente miniaturizados pelos criminosos em hardware discreto que cabia dentro de um cartão comum.',
+                casos: 'Uma quadrilha na França aperfeiçoou o protótipo acadêmico e, entre 2011-2012, gastou cerca de €600 mil com cartões roubados cujo PIN desconheciam. Eles foram pegos porque repetiam compras nas mesmas lojas, levantando suspeitas. Investigadores forenses do ENS/CEA analisaram os cartões confiscados, encontrando o segundo chip “piggyback” responsável pelo bypass. Esse incidente provou que o ataque, antes teórico (demonstrado por Murdoch e Drimer em 2010), era viável em larga escala. Desde então, não houve novos casos públicos conhecidos, pois contramedidas EMV foram implementadas para bloquear essa técnica.',
+                defesas: 'Após o caso francês, o EMVCo adicionou mecanismos para impedir repetições do ataque. Diversificação de Unpredictable Number no PIN offline: o terminal passa a gerar desafios criptográficos que o cartão deve assinar, tornando inútil uma resposta estática de “PIN correto” se o chip não tiver a chave correta. Além disso, emissores monitoram discrepâncias: se um cartão relatou “PIN OK” offline mas posteriormente o cliente contesta a compra, investiga-se possível bypass. Uma mitigação prática é que muitas transações migrem para online PIN ou CDCVM (autenticação pelo dispositivo móvel do cliente), eliminando a validação offline vulnerável. O PCI Council recomenda que comerciantes utilizem terminais certificados atualizados – equipamentos obsoletos podem não ter as correções do protocolo.',
+                iocs: 'Geralmente só identificável após investigação forense ou comparação de registros. Por exemplo, se vários clientes alegam não ter autorizado compras mas as transações constam com “PIN verified offline”, pode indicar ataque. Outra pista: análise de um cartão suspeito em laboratório pode revelar circuitos ou chips extras não padrão. No caso de 2011, raios X dos cartões clonados revelaram a presença do segundo chip FUNcard escondido. Em suma, discrepância entre logs do banco (que confiam no terminal) e relatos do cliente é o indicador – o terminal pensa que o PIN foi inserido corretamente, mas o cliente nega, sugerindo bypass.',
+                table: { vetor: 'Burlar verificação de PIN offline com dispositivo/chip adulterado.', ferramentas: 'Cartões clonados modificados com chip extra.', casos: 'França (2011): gangue gastou €600k com cartões roubados sem PIN.', fonte: 'HelpNetSecurity (2015)', defesa: 'EMV reforçado (desafio criptográfico); PIN online/CDCVM.' }
+            },
+            'Stolen NFC Keys': {
+                icon: '🔑',
+                summary: 'Roubo ou clonagem de chaves NFC (crachás, cartões) para obter acesso físico ou lógico indevido.',
+                vetor: 'O atacante busca obter posse do dispositivo NFC de autenticação – seja roubando fisicamente (por ex., subtrair o cartão de acesso de um funcionário) ou copiando os dados NFC dele. Muitas credenciais NFC de acesso (ex.: MiFare Classic) historicamente tinham criptografia fraca, permitindo clonagem em segundos com equipamento certo. Uma vez de posse da chave NFC (original ou clone), o invasor simplesmente apresenta a tag/classe roubada aos leitores autorizados, abrindo portas ou sessões como se fosse o dono legítimo.',
+                ferramentas: 'Ferramentas de clonagem como Proxmark3, Chameleon Mini, Flipper Zero conseguem ler e emular tags NFC populares. Com elas, um atacante pode escanear o badge de um funcionário alvo (até discretamente, encostando em sua carteira rapidamente) e gravar todos os detalhes para replicar depois. No mercado clandestino vendem-se dumps de chaves NFC corporativas e até cópias físicas (cartões impressos) já programadas. Em casos de roubo físico, nenhuma ferramenta extra é necessária além de eventualmente reprogramar a chave se houver proteção (algumas empresas usam senha na tag, mas muitas não).',
+                casos: 'Relatos específicos em bancos são confidenciais, mas incidentes genéricos ilustram o perigo. Em 2020, um hacker obteve acesso noturno a uma fintech em Londres clonando o cartão NFC de um funcionário da limpeza – ele simplesmente passou perto com um leitor na bolsa. Também houve casos em que criminosos roubaram cartões de clientes VIP que davam acesso a lounges ou serviços exclusivos; embora não seja acesso a dinheiro diretamente, explora falhas de segurança física. A empresa de segurança NordVPN enumerou “Chaves NFC Roubadas” como uma das 10 ameaças NFC, citando o risco de invasor obter controle de sistemas protegidos apenas pelo fator físico NFC.',
+                defesas: 'A principal recomendação é não confiar em NFC como autenticação única. Sempre que possível, chaves NFC (sejam cartões ou tokens) devem operar em dupla com um segundo fator: senha, biometria ou PIN. Assim, mesmo que clonadas ou furtadas, não funcionam isoladamente. Tecnologias de próxima geração, como FIDO2 security keys, integram NFC com criptografia assimétrica e PIN/biometria local – isso previne clonagem (a chave privada não sai do dispositivo) e requer confirmação do usuário. Do lado físico, implementar cartões com detecção de afastamento (que enviam alerta se deixam a posse do dono) ou simplesmente políticas de crachá (requerer foto junto ao crachá em portas sensíveis) ajudam. Criptografias robustas (Mifare DESFire, NFC secure element) devem substituir as legadas vulneráveis.',
+                iocs: 'No âmbito de TI, acessos anômalos em sistemas protegidos por NFC podem indicar chave comprometida – ex.: login de um funcionário em horário incomum usando token NFC, enquanto ele próprio alega não ter feito (pode significar clone em uso). Em controle de acesso físico, entrada duplicada – por exemplo, se o log mostra o mesmo crachá usado em dois prédios diferentes com intervalo curto – denuncia clonagem. Se um dispositivo NFC for perdido/roubado, deve ser imediatamente revogado; infelizmente, quando isso não é percebido de imediato, a primeira “dica” vem quando ocorre uma violação usando ele.',
+                table: { vetor: 'Roubo ou clonagem de chaves NFC (crachás, cartões) para acesso indevido.', ferramentas: 'Leitores/copiers de NFC (Proxmark, Flipper Zero); furto físico.', casos: 'Clonagem de crachá de funcionário (fintech 2020) acesso a datacenter.', fonte: 'NordVPN (2023)', defesa: 'MFA (NFC + PIN/biometria); tags seguras com criptografia forte.' }
+            }
+        };
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const vulnerabilitySourceCtx = document.getElementById('vulnerabilitySourceChart').getContext('2d');
+        new Chart(vulnerabilitySourceCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Engenharia Social (Phishing, Smishing, etc.)', 'Exploração Técnica Direta (Firmware, Protocolo)'],
+                datasets: [{
+                    data: [70, 30],
+                    backgroundColor: ['#E2725B', '#5D8AA8'],
+                    borderColor: '#F8F7F4',
+                    borderWidth: 4,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#3D405B', font: { size: 14 } }
+                    },
+                    tooltip: {
+                        callbacks: { title: tooltipTitleCallback },
+                        backgroundColor: '#3D405B',
+                        titleColor: '#FFFFFF',
+                        bodyColor: '#F8F7F4',
+                        padding: 12,
+                        cornerRadius: 4
+                    }
+                }
+            }
+        });
+
+        const mitigationEffectivenessCtx = document.getElementById('mitigationEffectivenessChart').getContext('2d');
+        new Chart(mitigationEffectivenessCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Tokenização + EMV', 'MFA (Biometria/Dispositivo)', 'Monitoramento de Anomalias (IA)', 'Educação do Usuário', 'App Shielding / RASP'],
+                datasets: [{
+                    label: 'Efetividade Relativa',
+                    data: [98, 95, 88, 75, 82],
+                    backgroundColor: ['#5D8AA8', '#81B29A', '#F0A27B', '#E2725B', '#6A9FB4'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { color: '#3D405B', callback: value => value + '%' }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#3D405B', font: { weight: '600' } }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: tooltipTitleCallback,
+                            label: (context) => `${context.dataset.label}: ${context.parsed.x}%`
+                        },
+                        backgroundColor: '#3D405B',
+                        titleColor: '#FFFFFF',
+                        bodyColor: '#F8F7F4',
+                        padding: 12,
+                        cornerRadius: 4
+                    }
+                }
+            }
+        });
+
+        const attackNavButtons = document.querySelectorAll('#attack-nav button');
+        const attackDetailContent = document.getElementById('attack-detail-content');
+        const comparativeTableBody = document.getElementById('comparative-table-body');
+
+        function displayAttackDetails(attackName) {
+            const data = attackData[attackName];
+            if (!data) return;
+
+            attackDetailContent.innerHTML = `
+                <h3 class="text-2xl font-bold text-[#3D405B] mb-4 flex items-center gap-3">
+                    <span class="text-3xl">${data.icon}</span> ${attackName}
+                </h3>
+                <div class="space-y-4 text-slate-700">
+                    <div>
+                        <h4 class="font-semibold text-lg text-[#5D8AA8]">Vetor de Ataque:</h4>
+                        <p>${data.vetor}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-[#5D8AA8]">Ferramentas Utilizadas:</h4>
+                        <p>${data.ferramentas}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-[#5D8AA8]">Casos Reais:</h4>
+                        <p>${data.casos}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-[#5D8AA8]">Defesas e Mitigações:</h4>
+                        <p>${data.defesas}</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-lg text-[#5D8AA8]">Indicadores de Comprometimento (IoCs):</h4>
+                        <p>${data.iocs}</p>
+                    </div>
+                </div>
+            `;
+
+            attackNavButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`button[data-attack="${attackName}"]`).classList.add('active');
+        }
+
+        function generateComparativeTable() {
+            comparativeTableBody.innerHTML = '';
+            Object.keys(attackData).forEach(attackName => {
+                const data = attackData[attackName].table;
+                if (data) {
+                    const row = comparativeTableBody.insertRow();
+                    row.className = 'border-b border-gray-100';
+                    row.insertCell().className = 'p-3 text-sm font-medium';
+                    row.cells[0].textContent = attackName;
+                    row.insertCell().className = 'p-3 text-sm';
+                    row.cells[1].textContent = data.vetor;
+                    row.insertCell().className = 'p-3 text-sm';
+                    row.cells[2].textContent = data.ferramentas;
+                    row.insertCell().className = 'p-3 text-sm';
+                    row.cells[3].textContent = data.casos;
+                    row.insertCell().className = 'p-3 text-sm';
+                    row.cells[4].textContent = data.fonte;
+                    row.insertCell().className = 'p-3 text-sm';
+                    row.cells[5].textContent = data.defesa;
+                }
+            });
+        }
+
+        attackNavButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const attackName = button.getAttribute('data-attack');
+                displayAttackDetails(attackName);
+            });
+        });
+
+        displayAttackDetails('NFC Relay Attack');
+        generateComparativeTable();
+
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('nav a');
+        
+        window.onscroll = () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        };
+    });
+    </script>
+</body>
+</html>
