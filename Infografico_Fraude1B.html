@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infográfico: Análise da Fraude BaaS de R$1 Bilhão</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Brilliant Blues (#003f5c, #58508d, #bc5090, #ff6361, #ffa600) -->
+    <!-- Narrative & Structure Plan: The infographic tells a story. It starts with a high-impact hero section stating the R$1B loss. It then provides context on the BaaS sector's vulnerability with a growth projection chart. The main body is a 2x2 grid dedicated to the 4 Pillars of Fraud Management, allowing users to digest each part separately. Each pillar will feature a key visualization to explain its failure. This is followed by a comparative section on global regulations to provide a broader perspective. The narrative concludes with actionable RLA recommendations, leaving the user with a clear understanding of the problem and potential solutions. This structure moves from problem to analysis to solution, creating a clear and compelling flow. -->
+    <!-- Visualization Choices: Hero Stat (R$1B): Inform -> Single Big Number -> Emphasize impact -> HTML/CSS. BaaS Growth: Show Change -> Chart.js Line Chart -> Provide context for the market's importance. Pillar 1 (Prevention): Organize/Inform -> HTML/CSS Flowchart + Chart.js Donut Chart (70% social eng.) -> Show cascading failure & key vulnerability. Pillar 2 (Detection): Compare -> Chart.js Bar Chart -> Quantify the ineffectiveness of controls. Pillar 3 (Remediation): Organize -> HTML/CSS two-column flow diagram -> Clarify the complex post-fraud process. Pillar 4 (Repression): Show Composition -> Chart.js Donut Chart -> Break down the elements of an effective response. Global Context: Compare -> Interactive HTML/CSS Cards -> Make dense comparative info digestible. All visualizations are implemented to be NO SVG and NO Mermaid JS. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+                max-height: 400px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #bc5090, #ff6361);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .flow-arrow {
+            color: #ff6361;
+            font-weight: 800;
+            font-size: 2rem;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <main class="container mx-auto px-4 py-8 md:py-16">
+
+        <section class="text-center mb-16 md:mb-24">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-[#003f5c] mb-4">Anatomia de uma Fraude</h1>
+            <p class="text-8xl md:text-9xl font-extrabold gradient-text mb-4">R$1 BILHÃO</p>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">Uma análise aprofundada das falhas sistêmicas no ecossistema de Banking as a Service (BaaS) no Brasil que permitiram um desastre financeiro sem precedentes.</p>
+        </section>
+        
+        <section class="bg-white rounded-lg shadow-xl p-6 md:p-10 mb-16 md:mb-24">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#003f5c] mb-2">Um Mercado em Ascensão, um Risco Crescente</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">O setor de BaaS no Brasil está projetado para um crescimento explosivo, tornando a segurança robusta não apenas uma necessidade, mas uma questão de sobrevivência. A fraude de R$1 bilhão expôs a urgência de fortalecer as defesas de um ecossistema cada vez mais vital para a economia digital.</p>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="marketGrowthChart"></canvas>
+            </div>
+        </section>
+
+        <section class="mb-16 md:mb-24">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center text-[#003f5c] mb-12">Os 4 Pilares da Fraude: Onde Tudo Deu Errado</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                
+                <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-[#003f5c] mb-4">1. Prevenção: As Barreiras Ineficazes</h3>
+                    <p class="text-gray-600 mb-6">A primeira linha de defesa falhou catastroficamente. Uma combinação de processos de verificação frágeis e a exploração do elo mais fraco — o ser humano — abriu as portas para o ataque.</p>
+                    <div class="chart-container" style="height:250px; max-width: 250px;">
+                        <canvas id="preventionChart"></canvas>
+                    </div>
+                    <p class="text-center text-sm text-gray-500 mt-2 mb-6">Fonte: Análise de vetores de fraude no Brasil.</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-[#58508d] mb-4">2. Detecção: O Alarme Silencioso</h3>
+                    <p class="text-gray-600 mb-6">Sistemas de monitoramento em tempo real não conseguiram identificar a "hemorragia silenciosa". A fraude escalou sem ser notada, revelando a ineficácia dos modelos de detecção frente a um ataque sofisticado.</p>
+                     <div class="chart-container">
+                        <canvas id="detectionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-[#bc5090] mb-4">3. Remediação: A Batalha Pós-Dano</h3>
+                    <p class="text-gray-600 mb-6">Uma vez descoberta, a corrida para conter os danos e amparar as vítimas encontrou um caminho complexo e, muitas vezes, frustrante. A recuperação dos valores se mostrou um desafio monumental.</p>
+                    <div class="flex flex-col md:flex-row justify-between text-center gap-4">
+                        <div class="flex-1">
+                            <h4 class="font-bold mb-2">Jornada da Vítima</h4>
+                            <div class="space-y-2 text-sm">
+                                <p class="bg-red-50 border border-red-200 p-2 rounded">Contato com o Banco</p>
+                                <p class="text-red-500 font-bold text-xl">&darr;</p>
+                                <p class="bg-red-50 border border-red-200 p-2 rounded">Boletim de Ocorrência</p>
+                                <p class="text-red-500 font-bold text-xl">&darr;</p>
+                                <p class="bg-red-50 border border-red-200 p-2 rounded">Acionar MED (Pix)</p>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                             <h4 class="font-bold mb-2">Ação da Instituição</h4>
+                             <div class="space-y-2 text-sm">
+                                <p class="bg-blue-50 border border-blue-200 p-2 rounded">Contenção Imediata</p>
+                                <p class="text-blue-500 font-bold text-xl">&darr;</p>
+                                <p class="bg-blue-50 border border-blue-200 p-2 rounded">Análise Forense (Defeito)</p>
+                                <p class="text-blue-500 font-bold text-xl">&darr;</p>
+                                <p class="bg-blue-50 border border-blue-200 p-2 rounded">Recuperação (Seguro)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-[#ff6361] mb-4">4. Repressão: A Caça aos Culpados</h3>
+                    <p class="text-gray-600 mb-6">A fase final foca em punir os responsáveis e usar os dados do ataque para fortalecer o ecossistema. Uma repressão eficaz é multifacetada e depende da colaboração entre setor público e privado.</p>
+                    <div class="chart-container">
+                        <canvas id="repressionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="bg-white rounded-lg shadow-xl p-6 md:p-10 mb-16 md:mb-24">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-[#003f5c] mb-2">Perspectiva Global: O Brasil não está sozinho</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">A luta contra a fraude financeira é mundial. Mercados desenvolvidos adotam estratégias diversas, desde a responsabilização compartilhada até o reembolso obrigatório, oferecendo lições valiosas para o Brasil.</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-bold text-lg text-[#58508d]">Singapura</h4>
+                    <p class="text-sm text-gray-600">Framework de Responsabilidade Compartilhada explícito entre bancos, telcos e consumidores. Inclui "cooling period" para atividades de risco.</p>
+                </div>
+                 <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-bold text-lg text-[#bc5090]">Reino Unido</h4>
+                    <p class="text-sm text-gray-600">Framework de reembolso obrigatório para vítimas de fraude de pagamento autorizado (APP), incentivando a prevenção pelos bancos.</p>
+                </div>
+                 <div class="border border-gray-200 rounded-lg p-4">
+                    <h4 class="font-bold text-lg text-[#ff6361]">União Europeia</h4>
+                    <p class="text-sm text-gray-600">Propostas (PSD3/PSR) para responsabilizar o provedor por fraude de "spoofing" e exigir verificação de nome do beneficiário.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-center text-[#003f5c] mb-12">Como a Fraude Poderia Ter Sido Evitada? Recomendações RLA</h2>
+             <div class="space-y-6">
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border-l-4 border-[#003f5c]">
+                    <h4 class="font-bold text-xl text-[#003f5c]">Prevenção Reforçada</h4>
+                    <p class="mt-2 text-gray-700">Implementar KYC/KYB rigoroso com validação cruzada, MFA forte com monitoramento de SIM Swap e controle rígido para alterações cadastrais.</p>
+                </div>
+                <div class="bg-gradient-to-r from-purple-50 to-violet-50 p-6 rounded-lg border-l-4 border-[#58508d]">
+                    <h4 class="font-bold text-xl text-[#58508d]">Detecção Otimizada</h4>
+                    <p class="mt-2 text-gray-700">Usar IA/ML para monitoramento comportamental em tempo real, regras "anti-catástrofe" e monitoramento de ramificação de contas para identificar redes de "laranjas".</p>
+                </div>
+                 <div class="bg-gradient-to-r from-pink-50 to-fuchsia-50 p-6 rounded-lg border-l-4 border-[#bc5090]">
+                    <h4 class="font-bold text-xl text-[#bc5090]">Remediação Ágil</h4>
+                    <p class="mt-2 text-gray-700">Executar análise forense rápida, ter planos de contingência claros para as vítimas e acionar mecanismos de recuperação de ativos (chargeback, seguros) prontamente.</p>
+                </div>
+                <div class="bg-gradient-to-r from-red-50 to-orange-50 p-6 rounded-lg border-l-4 border-[#ff6361]">
+                    <h4 class="font-bold text-xl text-[#ff6361]">Repressão Ativa</h4>
+                    <p class="mt-2 text-gray-700">Colaborar com autoridades, criar um sistema robusto de retroalimentação de dados sobre fraudes e monitorar continuamente a Deep/Dark Web para obter inteligência.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <footer class="mt-16 md:mt-24 text-center text-sm text-gray-500 py-6">
+        <p>Infográfico hipotético baseado em análise de risco para fins educacionais.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const FONT_COLOR = '#003f5c';
+            Chart.defaults.color = FONT_COLOR;
+            Chart.defaults.font.family = "'Inter', sans-serif";
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            };
+
+            const commonPlugins = {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            };
+
+            const wrapLabel = (label, maxLength = 16) => {
+                const words = label.split(' ');
+                let lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > maxLength) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                });
+                lines.push(currentLine.trim());
+                return lines.filter(line => line.length > 0);
+            };
+
+            new Chart(document.getElementById('marketGrowthChart'), {
+                type: 'line',
+                data: {
+                    labels: ['2023', '2025', '2027', '2029', '2031'],
+                    datasets: [{
+                        label: 'Tamanho do Mercado BaaS (em US$ Bi)',
+                        data: [12.2, 25, 40, 62, 87.4],
+                        fill: true,
+                        backgroundColor: 'rgba(88, 80, 141, 0.1)',
+                        borderColor: '#58508d',
+                        tension: 0.4,
+                        pointBackgroundColor: '#58508d',
+                        pointRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => `$${value}B`
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                             position: 'bottom',
+                             align: 'center',
+                             labels: {
+                                padding: 20
+                             }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: tooltipTitleCallback,
+                                label: (context) => `${context.dataset.label}: $${context.parsed.y}B`
+                            }
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('preventionChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: [wrapLabel('Engenharia Social como Vetor Principal'), 'Outras Causas'],
+                    datasets: [{
+                        data: [70, 30],
+                        backgroundColor: ['#ff6361', '#f0f2f5'],
+                        borderColor: ['#ff6361', '#d1d5db'],
+                        borderWidth: 1,
+                        cutout: '75%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                         ...commonPlugins,
+                        title: {
+                            display: true,
+                            text: '70% das Fraudes no Brasil',
+                            position: 'bottom',
+                            font: { weight: 'bold', size: 14 }
+                        }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('detectionChart'), {
+                type: 'bar',
+                data: {
+                    labels: [wrapLabel('Monitoramento Transacional'), wrapLabel('Análise Comportamental'), wrapLabel('Regras Anti-Catástrofe')],
+                    datasets: [{
+                        label: 'Eficácia Hipotética',
+                        data: [30, 25, 40],
+                        backgroundColor: ['#58508d', '#bc5090', '#ff6361'],
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: (value) => `${value}%`
+                            }
+                        }
+                    },
+                    plugins: {
+                         ...commonPlugins,
+                         title: {
+                            display: true,
+                            text: 'Eficácia Hipotética dos Controles (%)',
+                            position: 'top'
+                         }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('repressionChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: [wrapLabel('Colaboração com Autoridades'), wrapLabel('Retroalimentação de Dados'), wrapLabel('Monitoramento de Fontes Negras')],
+                    datasets: [{
+                        data: [40, 35, 25],
+                        backgroundColor: ['#003f5c', '#58508d', '#ff6361'],
+                        borderColor: '#f0f2f5',
+                        borderWidth: 4,
+                        hoverBorderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: tooltipTitleCallback
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 15,
+                                padding: 20
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Componentes da Repressão Ativa',
+                            position: 'top',
+                            font: { size: 16 }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
